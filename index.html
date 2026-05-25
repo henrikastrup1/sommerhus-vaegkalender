@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏖️ Sommerhus 2026 — Vægkalender</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --birgit: #d6336c;
+    --henrik: #1a4d2e;
+    --hanne: #1565c0;
+    --paper: #faf7f0;
+    --ink: #2c2416;
+    --faded: #b8aa94;
+    --border: #e0d8c8;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #e8e0d0;
+    min-height: 100vh;
+    padding: 40px 24px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ===== THE CALENDAR ===== */
+  .calendar {
+    max-width: 1300px;
+    width: 100%;
+    background: var(--paper);
+    padding: 0;
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.04),
+      0 8px 24px rgba(0,0,0,0.06),
+      0 0 0 1px rgba(0,0,0,0.04);
+    position: relative;
+  }
+
+  /* Hanging hole */
+  .calendar::before {
+    content: '⌀';
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 22px;
+    color: var(--faded);
+    opacity: 0.5;
+  }
+
+  /* Spiral binding visual */
+  .calendar::after {
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background: repeating-linear-gradient(
+      90deg,
+      #c0b09a 0px, #c0b09a 18px,
+      transparent 18px, transparent 28px
+    );
+    opacity: 0.4;
+  }
+
+  /* ===== HEADER ===== */
+  .cal-header {
+    text-align: center;
+    padding: 44px 20px 16px;
+    border-bottom: 2px solid var(--border);
+    position: relative;
+  }
+
+  .cal-header .year-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3.2rem;
+    color: var(--ink);
+    letter-spacing: 6px;
+    line-height: 1;
+  }
+
+  .cal-header .title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--faded);
+    margin-top: 2px;
+    letter-spacing: 2px;
+  }
+
+  .cal-header .owners {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .cal-header .owners span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .cal-header .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .dot-henrik { background: var(--henrik); }
+  .dot-birgit { background: var(--birgit); }
+  .dot-hanne { background: var(--hanne); }
+
+  /* ===== YEAR CONTROLS ===== */
+  .year-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(0,0,0,0.015);
+  }
+
+  .year-controls button {
+    background: none;
+    border: 1px solid var(--border);
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+
+  .year-controls button:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  .year-controls .yr-select {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    padding: 4px 8px;
+    text-align: center;
+    min-width: 80px;
+    cursor: pointer;
+    appearance: auto;
+  }
+
+  .year-controls .yr-select:focus { outline: none; }
+
+  /* ===== MONTHS GRID ===== */
+  .months-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    padding: 0;
+  }
+
+  .month {
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+    position: relative;
+  }
+
+  /* Every 4th child has no right border */
+  .month:nth-child(4n) { border-right: none; }
+  /* Last row has no bottom border */
+  .months-grid .month:nth-last-child(-n+4) { border-bottom: none; }
+
+  .month-header {
+    text-align: center;
+    padding: 8px 4px 6px;
+    border-bottom: 2px solid var(--border);
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 1px;
+    background: rgba(0,0,0,0.015);
+  }
+
+  .month-header .month-emoji {
+    font-family: 'Inter', sans-serif;
+    margin-right: 3px;
+    font-weight: 400;
+  }
+
+  /* Weekday labels */
+  .wk-labels {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 2px 0;
+  }
+
+  .wk-label {
+    text-align: center;
+    font-size: 0.55rem;
+    font-weight: 600;
+    color: var(--faded);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    padding: 2px 0;
+  }
+
+  /* Days */
+  .days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    padding: 2px;
+  }
+
+  .day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: var(--ink);
+    position: relative;
+    border-radius: 3px;
+    min-height: 26px;
+  }
+
+  .day.other { color: #ddd; }
+
+  .day .day-num {
+    position: relative;
+    z-index: 1;
+    font-size: 0.7rem;
+  }
+
+  /* Booking indicator - small colored dot in corner */
+  .day .indicator {
+    position: absolute;
+    bottom: 1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    z-index: 1;
+  }
+
+  .day .indicator.henrik { background: var(--henrik); }
+  .day .indicator.birgit { background: var(--birgit); }
+  .day .indicator.hanne { background: var(--hanne); }
+
+  /* Booking bar on the day cell */
+  .day.has-booking {
+    background: transparent;
+    font-weight: 500;
+  }
+
+  .day.has-booking.henrik {
+    background: rgba(26,77,46,0.12);
+    color: #1a4d2e;
+    font-weight: 600;
+  }
+
+  .day.has-booking.birgit {
+    background: rgba(214,51,108,0.12);
+    color: #b82d5e;
+    font-weight: 600;
+  }
+
+  .day.has-booking.hanne {
+    background: rgba(21,101,192,0.12);
+    color: #1565c0;
+    font-weight: 600;
+  }
+
+  .day.today {
+    box-shadow: inset 0 0 0 1.5px var(--ink);
+    font-weight: 700;
+  }
+
+  .day.weekend {
+    color: #bbb;
+  }
+  .day.has-booking.weekend {
+    color: inherit;
+  }
+
+  /* ===== STATS STRIP ===== */
+  .stats-strip {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: #7a6e5a;
+    background: rgba(0,0,0,0.015);
+  }
+
+  .stats-strip strong {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .stats-strip .s-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+
+  /* ===== FOOTER ===== */
+  .cal-footer {
+    text-align: center;
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.75rem;
+    color: var(--faded);
+    letter-spacing: 1px;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1100px) {
+    .months-grid { grid-template-columns: repeat(3, 1fr); }
+    .month:nth-child(4n) { border-right: 1px solid var(--border); }
+    .month:nth-child(3n) { border-right: none; }
+    .months-grid .month:nth-last-child(-n+3) { border-bottom: none; }
+    .months-grid .month:nth-last-child(-n+4) { border-bottom: 1px solid var(--border); }
+  }
+
+  @media (max-width: 800px) {
+    body { padding: 16px 8px; }
+    .months-grid { grid-template-columns: repeat(2, 1fr); }
+    .month:nth-child(3n) { border-right: 1px solid var(--border); }
+    .month:nth-child(2n) { border-right: none; }
+    .months-grid .month:nth-last-child(-n+2) { border-bottom: none; }
+    .months-grid .month:nth-last-child(-n+3) { border-bottom: 1px solid var(--border); }
+    .cal-header .year-num { font-size: 2.4rem; }
+    .day { font-size: 0.55rem; min-height: 22px; }
+    .day .day-num { font-size: 0.6rem; }
+    .stats-strip { flex-wrap: wrap; gap: 10px; }
+  }
+
+  @media (max-width: 500px) {
+    .months-grid { grid-template-columns: 1fr; }
+    .month:nth-child(2n) { border-right: none; }
+    .day { min-height: 28px; font-size: 0.7rem; }
+    .day .day-num { font-size: 0.75rem; }
+  }
+
+  /* Print styles - make it look great printed */
+  @media print {
+    body { background: white; padding: 0; }
+    .calendar { box-shadow: none; max-width: 100%; }
+    .year-controls button { display: none; }
+    .year-controls .yr-select { appearance: none; border: none; }
+    .calendar::before, .calendar::after { display: none; }
+    .cal-header { padding-top: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="calendar" id="calendar">
+  <!-- HEADER -->
+  <div class="cal-header">
+    <div class="year-num" id="yearDisplay">2026</div>
+    <div class="title">Sommerhus — Birgit · Henrik · Hanne</div>
+    <div class="owners">
+      <span><span class="dot dot-birgit"></span> Birgit</span>
+      <span><span class="dot dot-henrik"></span> Henrik</span>
+      <span><span class="dot dot-hanne"></span> Hanne</span>
+    </div>
+  </div>
+
+  <!-- YEAR CONTROLS -->
+  <div class="year-controls">
+    <button onclick="switchYear(currentYear - 1)">←</button>
+    <select class="yr-select" id="yearSelect" onchange="switchYear(parseInt(this.value))">
+      <option value="2026">2026</option>
+      <option value="2027">2027</option>
+      <option value="2028">2028</option>
+      <option value="2029">2029</option>
+      <option value="2030">2030</option>
+    </select>
+    <button onclick="switchYear(currentYear + 1)">→</button>
+  </div>
+
+  <!-- MONTHS -->
+  <div class="months-grid" id="monthsGrid"></div>
+
+  <!-- STATS -->
+  <div class="stats-strip" id="statsStrip"></div>
+
+  <!-- FOOTER -->
+  <div class="cal-footer">“Nogle gange har man bare brug for sommerhus” 🏖️</div>
+</div>
+
+<script>
+// ===== DATA =====
+const ownerOrder = ["Birgit", "Henrik", "Hanne"];
+const ownerColors = { "Birgit": "#d6336c", "Henrik": "#1a4d2e", "Hanne": "#1565c0" };
+const monthNames = ["Januar", "Februar", "Marts", "April", "Maj", "Juni",
+                     "Juli", "August", "September", "Oktober", "November", "December"];
+const monthEmojis = ["🎉", "🎭", "🌸", "🌷", "🌺", "🌻", "🏖️", "☀️", "🍂", "🎃", "🕯️", "🎄"];
+const dayLabels = ["M", "T", "O", "T", "F", "L", "S"];
+const refStart = new Date(2025, 11, 20); // Birgit starter d. 20. dec 2025
+const msDay = 86400000;
+
+let currentYear = 2026;
+
+function addDays(date, n) {
+  const d = new Date(date); d.setDate(d.getDate() + n); return d;
+}
+
+function generateYear(year) {
+  const bookedDays = new Map(); // "YYYY-MM-DD" -> owner name
+  const bookings = [];
+  const yearStart = new Date(year, 0, 1);
+  const yearEnd = new Date(year, 11, 31);
+
+  let blockNum = Math.floor((yearStart - refStart) / msDay / 14) - 1;
+  let blockStart = addDays(refStart, blockNum * 14);
+
+  while (blockStart <= yearEnd) {
+    const ownerIdx = ((blockNum % 3) + 3) % 3;
+    const owner = ownerOrder[ownerIdx];
+    const blockEnd = addDays(blockStart, 13);
+
+    if (blockEnd >= yearStart) {
+      bookings.push({ who: owner, start: new Date(blockStart), end: new Date(blockEnd), days: 14 });
+
+      for (let d = new Date(blockStart); d <= blockEnd; d.setDate(d.getDate() + 1)) {
+        if (d >= yearStart && d <= yearEnd) {
+          const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+          bookedDays.set(key, owner);
+        }
+      }
+    }
+
+    blockNum++;
+    blockStart = addDays(refStart, blockNum * 14);
+  }
+
+  return { bookings, bookedDays };
+}
+
+// ===== RENDER =====
+function render(year) {
+  currentYear = year;
+  const { bookings, bookedDays } = generateYear(year);
+
+  document.getElementById('yearDisplay').textContent = year;
+  document.getElementById('yearSelect').value = year;
+
+  const grid = document.getElementById('monthsGrid');
+  grid.innerHTML = '';
+
+  // Count stats per owner
+  const ownerDays = { "Birgit": 0, "Henrik": 0, "Hanne": 0 };
+  let totalDays = 0;
+
+  for (let m = 0; m < 12; m++) {
+    const firstDay = new Date(year, m, 1);
+    const lastDay = new Date(year, m + 1, 0);
+    const startDow = firstDay.getDay(); // 0=Sun
+    const startOffset = startDow === 0 ? 6 : startDow - 1;
+
+    // Count month bookings
+    let monthBookings = 0;
+    for (let d = 1; d <= lastDay.getDate(); d++) {
+      const key = `${year}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      if (bookedDays.has(key)) {
+        monthBookings++;
+        totalDays++;
+        ownerDays[bookedDays.get(key)]++;
+      }
+    }
+
+    const monthDiv = document.createElement('div');
+    monthDiv.className = 'month';
+
+    // Header
+    const header = document.createElement('div');
+    header.className = 'month-header';
+    header.innerHTML = `<span class="month-emoji">${monthEmojis[m]}</span>${monthNames[m]}`;
+    monthDiv.appendChild(header);
+
+    // Weekday labels
+    const wkl = document.createElement('div');
+    wkl.className = 'wk-labels';
+    dayLabels.forEach(l => {
+      const el = document.createElement('div');
+      el.className = 'wk-label';
+      el.textContent = l;
+      wkl.appendChild(el);
+    });
+    monthDiv.appendChild(wkl);
+
+    // Days
+    const daysDiv = document.createElement('div');
+    daysDiv.className = 'days';
+
+    // Blank days
+    for (let i = 0; i < startOffset; i++) {
+      const blank = document.createElement('div');
+      blank.className = 'day other';
+      daysDiv.appendChild(blank);
+    }
+
+    // Actual days
+    const today = new Date();
+    for (let d = 1; d <= lastDay.getDate(); d++) {
+      const day = document.createElement('div');
+      day.className = 'day';
+
+      const key = `${year}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const owner = bookedDays.get(key);
+
+      const date = new Date(year, m, d);
+      const dow = date.getDay(); // 0=Sun
+      const isWeekend = dow === 0 || dow === 6;
+
+      if (owner) {
+        day.classList.add('has-booking', owner.toLowerCase());
+      }
+
+      if (isWeekend) day.classList.add('weekend');
+
+      if (date.toDateString() === today.toDateString()) {
+        day.classList.add('today');
+      }
+
+      day.innerHTML = `<span class="day-num">${d}</span>`;
+      if (owner) {
+        day.innerHTML += `<span class="indicator ${owner.toLowerCase()}"></span>`;
+        day.title = `${d}. ${monthNames[m]} — ${owner}`;
+      }
+
+      daysDiv.appendChild(day);
+    }
+
+    monthDiv.appendChild(daysDiv);
+    grid.appendChild(monthDiv);
+  }
+
+  // Stats
+  document.getElementById('statsStrip').innerHTML = `
+    <span>📊 <strong>${bookings.length}</strong> bookinger</span>
+    <span>📅 <strong>${totalDays}</strong> dage booket</span>
+    <span><span class="s-dot" style="background:#d6336c"></span> <strong>${ownerDays['Birgit']}</strong> dage</span>
+    <span><span class="s-dot" style="background:#1a4d2e"></span> <strong>${ownerDays['Henrik']}</strong> dage</span>
+    <span><span class="s-dot" style="background:#1565c0"></span> <strong>${ownerDays['Hanne']}</strong> dage</span>
+  `;
+}
+
+function switchYear(year) {
+  if (year < 2025 || year > 2035) return;
+  render(year);
+}
+
+render(2026);
+</script>
+</body>
+</html>
