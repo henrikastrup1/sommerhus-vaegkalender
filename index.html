@@ -12,6 +12,8 @@
     --birgit: #d6336c;
     --henrik: #1a4d2e;
     --hanne: #1565c0;
+    --helligdag: #e67e22;
+    --ferie: #8e44ad;
     --paper: #faf7f0;
     --ink: #2c2416;
     --faded: #b8aa94;
@@ -27,7 +29,6 @@
     justify-content: center;
   }
 
-  /* ===== THE CALENDAR ===== */
   .calendar {
     max-width: 1300px;
     width: 100%;
@@ -40,7 +41,6 @@
     position: relative;
   }
 
-  /* Hanging hole */
   .calendar::before {
     content: '⌀';
     position: absolute;
@@ -52,7 +52,6 @@
     opacity: 0.5;
   }
 
-  /* Spiral binding visual */
   .calendar::after {
     content: '';
     position: absolute;
@@ -93,50 +92,66 @@
     letter-spacing: 2px;
   }
 
-  .cal-header .owners {
+  .cal-header .filters {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    flex-wrap: wrap;
+    gap: 8px 16px;
     margin-top: 10px;
     font-size: 0.8rem;
     font-weight: 500;
   }
 
-  .cal-header .owners span {
+  .cal-header .filters .filter-group {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
+  }
+
+  .cal-header .filters .sep {
+    color: var(--border);
+    font-weight: 300;
+  }
+
+  .cal-header .filters span.filter-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
     cursor: pointer;
     padding: 4px 10px;
     border-radius: 20px;
     transition: all 0.15s;
     border: 2px solid transparent;
     user-select: none;
+    white-space: nowrap;
   }
-  .cal-header .owners span:hover {
+  .cal-header .filters span.filter-item:hover {
     background: rgba(0,0,0,0.04);
   }
-  .cal-header .owners span.active {
+  .cal-header .filters span.filter-item.active {
     border-color: currentColor;
     background: rgba(0,0,0,0.03);
   }
-  .cal-header .owners span.inactive {
+  .cal-header .filters span.filter-item.inactive {
     opacity: 0.35;
     text-decoration: line-through;
   }
-  .cal-header .owners span.inactive:hover {
+  .cal-header .filters span.filter-item.inactive:hover {
     opacity: 0.6;
   }
 
-  .cal-header .dot {
+  .filter-dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
     display: inline-block;
+    flex-shrink: 0;
   }
   .dot-henrik { background: var(--henrik); }
   .dot-birgit { background: var(--birgit); }
   .dot-hanne { background: var(--hanne); }
+  .dot-helligdag { background: var(--helligdag); }
+  .dot-ferie { background: var(--ferie); }
 
   /* ===== YEAR CONTROLS ===== */
   .year-controls {
@@ -199,9 +214,7 @@
     position: relative;
   }
 
-  /* Every 4th child has no right border */
   .month:nth-child(4n) { border-right: none; }
-  /* Last row has no bottom border */
   .months-grid .month:nth-last-child(-n+4) { border-bottom: none; }
 
   .month-header {
@@ -222,7 +235,6 @@
     font-weight: 400;
   }
 
-  /* Weekday labels */
   .wk-labels {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -239,7 +251,6 @@
     padding: 2px 0;
   }
 
-  /* Days */
   .days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -268,7 +279,6 @@
     font-size: 0.7rem;
   }
 
-  /* Booking indicator - small colored dot in corner */
   .day .indicator {
     position: absolute;
     bottom: 1px;
@@ -279,34 +289,26 @@
     border-radius: 50%;
     z-index: 1;
   }
-
   .day .indicator.henrik { background: var(--henrik); }
   .day .indicator.birgit { background: var(--birgit); }
   .day .indicator.hanne { background: var(--hanne); }
+  .day .indicator.helligdag { background: var(--helligdag); width: 4px; height: 4px; bottom: 3px; }
+  .day .indicator.ferie { background: var(--ferie); width: 4px; height: 4px; bottom: -1px; }
 
-  /* Booking bar on the day cell */
   .day.has-booking {
     background: transparent;
     font-weight: 500;
   }
+  .day.has-booking.henrik { background: rgba(26,77,46,0.12); color: #1a4d2e; font-weight: 600; }
+  .day.has-booking.birgit { background: rgba(214,51,108,0.12); color: #b82d5e; font-weight: 600; }
+  .day.has-booking.hanne { background: rgba(21,101,192,0.12); color: #1565c0; font-weight: 600; }
 
-  .day.has-booking.henrik {
-    background: rgba(26,77,46,0.12);
-    color: #1a4d2e;
-    font-weight: 600;
-  }
-
-  .day.has-booking.birgit {
-    background: rgba(214,51,108,0.12);
-    color: #b82d5e;
-    font-weight: 600;
-  }
-
-  .day.has-booking.hanne {
-    background: rgba(21,101,192,0.12);
-    color: #1565c0;
-    font-weight: 600;
-  }
+  .day.is-helligdag { box-shadow: inset 0 0 0 1px rgba(230,126,34,0.3); }
+  .day.is-ferie { box-shadow: inset 0 0 0 1px rgba(142,68,173,0.3); }
+  .day.is-helligdag.is-ferie { box-shadow: inset 0 0 0 1px rgba(230,126,34,0.3), inset 0 2px 0 0 rgba(142,68,173,0.3); }
+  .day.is-helligdag.has-booking { box-shadow: none; }
+  .day.is-helligdag.has-booking::after { content: ''; position: absolute; top: 1px; right: 1px; width: 4px; height: 4px; border-radius: 50%; background: var(--helligdag); }
+  .day.is-ferie.has-booking::after { content: ''; position: absolute; top: 1px; left: 1px; width: 4px; height: 4px; border-radius: 50%; background: var(--ferie); }
 
   .day.today {
     box-shadow: inset 0 0 0 1.5px var(--ink);
@@ -320,11 +322,14 @@
     color: inherit;
   }
 
+  .day.filtered-out { opacity: 0.2; }
+
   /* ===== STATS STRIP ===== */
   .stats-strip {
     display: flex;
     justify-content: center;
-    gap: 28px;
+    flex-wrap: wrap;
+    gap: 16px;
     padding: 12px 20px;
     border-top: 1px solid var(--border);
     font-size: 0.75rem;
@@ -341,7 +346,31 @@
     display: inline-block;
     width: 6px; height: 6px;
     border-radius: 50%;
-    margin-right: 6px;
+    margin-right: 4px;
+  }
+
+  /* ===== LEGEND ===== */
+  .legend-bar {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 6px 20px 10px;
+    border-top: 1px solid var(--border);
+    font-size: 0.65rem;
+    color: var(--faded);
+    background: rgba(0,0,0,0.01);
+  }
+  .legend-bar span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .legend-bar .led {
+    display: inline-block;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    flex-shrink: 0;
   }
 
   /* ===== FOOTER ===== */
@@ -375,7 +404,9 @@
     .cal-header .year-num { font-size: 2.4rem; }
     .day { font-size: 0.55rem; min-height: 22px; }
     .day .day-num { font-size: 0.6rem; }
-    .stats-strip { flex-wrap: wrap; gap: 10px; }
+    .stats-strip { gap: 8px; }
+    .cal-header .filters { gap: 4px 8px; }
+    .cal-header .filters span.filter-item { padding: 2px 6px; font-size: 0.7rem; }
   }
 
   @media (max-width: 500px) {
@@ -385,7 +416,6 @@
     .day .day-num { font-size: 0.75rem; }
   }
 
-  /* Print styles - make it look great printed */
   @media print {
     body { background: white; padding: 0; }
     .calendar { box-shadow: none; max-width: 100%; }
@@ -403,11 +433,7 @@
   <div class="cal-header">
     <div class="year-num" id="yearDisplay">2026</div>
     <div class="title">Sommerhus — Birgit · Henrik · Hanne</div>
-    <div class="owners">
-      <span onclick="toggleOwner('Birgit')" data-owner="Birgit" class="active"><span class="dot dot-birgit"></span> Birgit</span>
-      <span onclick="toggleOwner('Henrik')" data-owner="Henrik" class="active"><span class="dot dot-henrik"></span> Henrik</span>
-      <span onclick="toggleOwner('Hanne')" data-owner="Hanne" class="active"><span class="dot dot-hanne"></span> Hanne</span>
-    </div>
+    <div class="filters" id="filterBar"></div>
   </div>
 
   <!-- YEAR CONTROLS -->
@@ -429,6 +455,9 @@
   <!-- STATS -->
   <div class="stats-strip" id="statsStrip"></div>
 
+  <!-- LEGEND -->
+  <div class="legend-bar" id="legendBar"></div>
+
   <!-- FOOTER -->
   <div class="cal-footer">“Nogle gange har man bare brug for sommerhus” 🏖️</div>
 </div>
@@ -441,27 +470,136 @@ const monthNames = ["Januar", "Februar", "Marts", "April", "Maj", "Juni",
                      "Juli", "August", "September", "Oktober", "November", "December"];
 const monthEmojis = ["🎉", "🎭", "🌸", "🌷", "🌺", "🌻", "🏖️", "☀️", "🍂", "🎃", "🕯️", "🎄"];
 const dayLabels = ["M", "T", "O", "T", "F", "L", "S"];
-const refStart = new Date(2025, 11, 20); // Birgit starter d. 20. dec 2025
+const refStart = new Date(2025, 11, 20);
 const msDay = 86400000;
 
+// Danish holidays (from Google Calendar "Helligdage i Danmark")
+// Format: "YYYY-MM-DD" -> name
+const holidays = {
+  // 2026
+  "2026-02-14": "Valentinsdag", "2026-02-15": "Fastelavn",
+  "2026-03-29": "Palmesøndag",
+  "2026-04-02": "Skærtorsdag", "2026-04-03": "Langfredag",
+  "2026-04-05": "Påskedag", "2026-04-06": "Anden påskedag",
+  "2026-05-01": "Store bededag",
+  "2026-05-05": "Befrielsesdagen",
+  "2026-05-14": "Kristi himmelfartsdag",
+  "2026-05-24": "Pinsedag", "2026-05-25": "Anden pinsedag",
+  "2026-06-05": "Grundlovsdag",
+  "2026-10-31": "Halloween",
+  "2026-12-24": "Juleaften", "2026-12-25": "Juledag", "2026-12-26": "Anden juledag",
+  "2026-12-31": "Nytårsaften",
+  // 2027
+  "2027-01-01": "Nytårsdag",
+  "2027-02-07": "Fastelavn", "2027-02-14": "Valentinsdag",
+  "2027-03-21": "Palmesøndag",
+  "2027-03-25": "Skærtorsdag", "2027-03-26": "Langfredag",
+  "2027-03-28": "Påskedag", "2027-03-29": "Anden påskedag",
+  "2027-04-23": "Store bededag",
+  "2027-05-01": "Arbejdernes kampdag",
+  "2027-05-05": "Befrielsesdagen",
+  "2027-05-06": "Kristi himmelfartsdag",
+  "2027-05-16": "Pinsedag", "2027-05-17": "Anden pinsedag",
+  "2027-06-05": "Grundlovsdag",
+  "2027-10-31": "Halloween",
+  "2027-12-24": "Juleaften", "2027-12-25": "Juledag", "2027-12-26": "Anden juledag",
+  "2027-12-31": "Nytårsaften",
+};
+
+// School holidays (from user)
+function generateSchoolHolidays(year) {
+  const r = new Map(); // "YYYY-MM-DD" -> name
+  if (year === 2026) {
+    addRange(r, "2026-06-27", "2026-08-10", "Sommerferie");
+    addRange(r, "2026-10-12", "2026-10-16", "Efterårsferie");
+    addRange(r, "2026-12-21", "2027-01-01", "Juleferie");
+  } else if (year === 2027) {
+    addRange(r, "2027-02-15", "2027-02-19", "Vinterferie");
+    addRange(r, "2027-03-22", "2027-03-29", "Påskeferie");
+    addRange(r, "2027-06-26", "2027-08-08", "Sommerferie");
+    addRange(r, "2027-10-11", "2027-10-15", "Efterårsferie");
+    addRange(r, "2027-12-22", "2028-01-02", "Juleferie");
+  } else {
+    // 2028+ extended - approximate pattern
+    addRange(r, year + "-06-25", year + "-08-07", "Sommerferie");
+    addRange(r, year + "-10-09", year + "-10-13", "Efterårsferie");
+    addRange(r, year + "-12-22", (year+1) + "-01-02", "Juleferie");
+  }
+  return r;
+}
+
+function addRange(map, startStr, endStr, name) {
+  const s = new Date(startStr);
+  const e = new Date(endStr);
+  for (let d = new Date(s); d <= e; d.setDate(d.getDate() + 1)) {
+    const key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    map.set(key, name);
+  }
+}
+
+// ===== STATE =====
 let currentYear = 2026;
 let visibleOwners = new Set(["Birgit", "Henrik", "Hanne"]);
+let showHolidays = true;
+let showSchoolHolidays = true;
 
-function toggleOwner(name) {
-  if (visibleOwners.has(name)) {
-    // Don't allow de-selecting if it's the last one
-    if (visibleOwners.size === 1) return;
-    visibleOwners.delete(name);
-  } else {
-    visibleOwners.add(name);
+function toggleFilter(key) {
+  if (key === "Helligdage") { showHolidays = !showHolidays; }
+  else if (key === "Ferie") { showSchoolHolidays = !showSchoolHolidays; }
+  else {
+    // Owner toggle
+    if (visibleOwners.has(key)) {
+      // Prevent de-selecting the last active item
+      const activeOwners = visibleOwners.size;
+      const activeFilters = (showHolidays ? 1 : 0) + (showSchoolHolidays ? 1 : 0);
+      if (activeOwners === 1 && activeFilters === 0) return;
+      visibleOwners.delete(key);
+    } else {
+      visibleOwners.add(key);
+    }
   }
-  // Update UI classes
-  document.querySelectorAll('.owners span[data-owner]').forEach(el => {
-    const o = el.dataset.owner;
-    el.classList.toggle('active', visibleOwners.has(o));
-    el.classList.toggle('inactive', !visibleOwners.has(o));
-  });
+  updateFilterUI();
   render(currentYear);
+}
+
+function updateFilterUI() {
+  document.querySelectorAll('.filter-item[data-key]').forEach(el => {
+    const key = el.dataset.key;
+    let active;
+    if (key === "Helligdage") active = showHolidays;
+    else if (key === "Ferie") active = showSchoolHolidays;
+    else active = visibleOwners.has(key);
+    el.classList.toggle('active', active);
+    el.classList.toggle('inactive', !active);
+  });
+}
+
+function buildFilterBar(year) {
+  const bar = document.getElementById('filterBar');
+  bar.innerHTML = '';
+
+  function addItem(key, emoji, color, label) {
+    const span = document.createElement('span');
+    span.className = 'filter-item active';
+    span.dataset.key = key;
+    span.onclick = () => toggleFilter(key);
+    span.innerHTML = `<span class="filter-dot" style="background:${color}"></span> ${emoji} ${label}`;
+    bar.appendChild(span);
+  }
+
+  addItem('Birgit', '🟢', ownerColors.Birgit, 'Birgit');
+  addItem('Henrik', '🟢', ownerColors.Henrik, 'Henrik');
+  addItem('Hanne', '🟢', ownerColors.Hanne, 'Hanne');
+
+  const sep = document.createElement('span');
+  sep.className = 'sep';
+  sep.textContent = '│';
+  bar.appendChild(sep);
+
+  addItem('Helligdage', '❤️', '#e67e22', 'Helligdage');
+  addItem('Ferie', '☀️', '#8e44ad', 'Ferie');
+
+  updateFilterUI();
 }
 
 function addDays(date, n) {
@@ -469,7 +607,7 @@ function addDays(date, n) {
 }
 
 function generateYear(year) {
-  const bookedDays = new Map(); // "YYYY-MM-DD" -> owner name
+  const bookedDays = new Map();
   const bookings = [];
   const yearStart = new Date(year, 0, 1);
   const yearEnd = new Date(year, 11, 31);
@@ -487,7 +625,7 @@ function generateYear(year) {
 
       for (let d = new Date(blockStart); d <= blockEnd; d.setDate(d.getDate() + 1)) {
         if (d >= yearStart && d <= yearEnd) {
-          const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+          const key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
           bookedDays.set(key, owner);
         }
       }
@@ -500,10 +638,23 @@ function generateYear(year) {
   return { bookings, bookedDays };
 }
 
+function isHolidayKey(key, year) {
+  return holidays.hasOwnProperty(key);
+}
+
+function getHolidayName(key) {
+  return holidays[key] || '';
+}
+
+function isSchoolDay(key) {
+  return false; // school holidays are date ranges, handled differently
+}
+
 // ===== RENDER =====
 function render(year) {
   currentYear = year;
   const { bookings, bookedDays } = generateYear(year);
+  const schoolDays = generateSchoolHolidays(year);
 
   document.getElementById('yearDisplay').textContent = year;
   document.getElementById('yearSelect').value = year;
@@ -511,26 +662,17 @@ function render(year) {
   const grid = document.getElementById('monthsGrid');
   grid.innerHTML = '';
 
-  // Count stats per owner
+  // Count stats
   const ownerDays = { "Birgit": 0, "Henrik": 0, "Hanne": 0 };
-  let totalDays = 0;
+  let totalBookingDays = 0;
+  let totalHolidayDays = 0;
+  let totalSchoolDays = 0;
 
   for (let m = 0; m < 12; m++) {
     const firstDay = new Date(year, m, 1);
     const lastDay = new Date(year, m + 1, 0);
-    const startDow = firstDay.getDay(); // 0=Sun
+    const startDow = firstDay.getDay();
     const startOffset = startDow === 0 ? 6 : startDow - 1;
-
-    // Count month bookings
-    let monthBookings = 0;
-    for (let d = 1; d <= lastDay.getDate(); d++) {
-      const key = `${year}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      if (bookedDays.has(key)) {
-        monthBookings++;
-        totalDays++;
-        ownerDays[bookedDays.get(key)]++;
-      }
-    }
 
     const monthDiv = document.createElement('div');
     monthDiv.className = 'month';
@@ -556,46 +698,67 @@ function render(year) {
     const daysDiv = document.createElement('div');
     daysDiv.className = 'days';
 
-    // Blank days
     for (let i = 0; i < startOffset; i++) {
       const blank = document.createElement('div');
       blank.className = 'day other';
       daysDiv.appendChild(blank);
     }
 
-    // Actual days
     const today = new Date();
     for (let d = 1; d <= lastDay.getDate(); d++) {
       const day = document.createElement('div');
       day.className = 'day';
 
-      const key = `${year}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const key = year + '-' + String(m+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
       const owner = bookedDays.get(key);
+      const holName = getHolidayKey(key, year) ? getHolidayName(key) : null;
+      const schName = schoolDays.get(key);
 
       const date = new Date(year, m, d);
-      const dow = date.getDay(); // 0=Sun
+      const dow = date.getDay();
       const isWeekend = dow === 0 || dow === 6;
 
       if (owner) {
         day.classList.add('has-booking', owner.toLowerCase());
         if (!visibleOwners.has(owner)) {
-          day.style.opacity = '0.2';
+          day.classList.add('filtered-out');
         }
       }
 
-      if (isWeekend) day.classList.add('weekend');
+      if (holName && showHolidays) {
+        day.classList.add('is-helligdag');
+        totalHolidayDays++;
+      }
+      if (schName && showSchoolHolidays) {
+        day.classList.add('is-ferie');
+        totalSchoolDays++;
+      }
 
+      if (isWeekend) day.classList.add('weekend');
       if (date.toDateString() === today.toDateString()) {
         day.classList.add('today');
       }
 
-      day.innerHTML = `<span class="day-num">${d}</span>`;
+      // Build indicator dots
+      let indicatorHTML = '';
       if (owner && visibleOwners.has(owner)) {
-        day.innerHTML += `<span class="indicator ${owner.toLowerCase()}"></span>`;
-        day.title = `${d}. ${monthNames[m]} — ${owner}`;
-      } else if (owner) {
-        day.title = `${d}. ${monthNames[m]} — ${owner} (skjult)`;
+        indicatorHTML += `<span class="indicator ${owner.toLowerCase()}"></span>`;
       }
+      if (holName && showHolidays && !owner) {
+        indicatorHTML += `<span class="indicator helligdag"></span>`;
+      }
+      if (schName && showSchoolHolidays && !owner) {
+        indicatorHTML += `<span class="indicator ferie"></span>`;
+      }
+
+      day.innerHTML = `<span class="day-num">${d}</span>` + indicatorHTML;
+
+      // Tooltip
+      let tips = [];
+      if (owner) tips.push(owner);
+      if (holName) tips.push('🎉 ' + holName);
+      if (schName) tips.push('🏫 ' + schName);
+      day.title = tips.length ? `${d}. ${monthNames[m]} — ${tips.join(', ')}` : '';
 
       daysDiv.appendChild(day);
     }
@@ -604,7 +767,7 @@ function render(year) {
     grid.appendChild(monthDiv);
   }
 
-  // Stats — only count visible bookings
+  // Stats
   const visibleBookings = bookings.filter(b => visibleOwners.has(b.who));
   const visibleOwnerDays = { "Birgit": 0, "Henrik": 0, "Hanne": 0 };
   let visibleTotalDays = 0;
@@ -617,21 +780,40 @@ function render(year) {
     }
   });
   const v = visibleOwnerDays;
-  const totalFiltered = visibleOwners.size < 3 ? ` (filtreret)` : '';
+  const filtered = visibleOwners.size < 3 ? ' (filtreret)' : '';
+  const hCount = Object.keys(holidays).filter(k => k.startsWith(String(year))).length;
+
   document.getElementById('statsStrip').innerHTML = `
-    <span>📊 <strong>${visibleBookings.length}</strong> bookinger${totalFiltered}</span>
-    <span>📅 <strong>${visibleTotalDays}</strong> dage${totalFiltered}</span>
+    <span>📊 <strong>${visibleBookings.length}</strong> bookinger${filtered}</span>
+    <span>📅 <strong>${visibleTotalDays}</strong> dage${filtered}</span>
     <span><span class="s-dot" style="background:#d6336c"></span> <strong>${v['Birgit']}</strong>${visibleOwners.has('Birgit') ? '' : ' ✗'}</span>
     <span><span class="s-dot" style="background:#1a4d2e"></span> <strong>${v['Henrik']}</strong>${visibleOwners.has('Henrik') ? '' : ' ✗'}</span>
     <span><span class="s-dot" style="background:#1565c0"></span> <strong>${v['Hanne']}</strong>${visibleOwners.has('Hanne') ? '' : ' ✗'}</span>
+    ${showHolidays ? `<span>❤️ <strong>${totalHolidayDays}</strong> helligdage</span>` : ''}
+    ${showSchoolHolidays ? `<span>☀️ <strong>${totalSchoolDays}</strong> feriedage</span>` : ''}
   `;
+
+  // Legend
+  document.getElementById('legendBar').innerHTML = `
+    <span><span class="led" style="background:#d6336c"></span> Birgit</span>
+    <span><span class="led" style="background:#1a4d2e"></span> Henrik</span>
+    <span><span class="led" style="background:#1565c0"></span> Hanne</span>
+    <span><span class="led" style="background:#e67e22"></span> 🎉 Helligdage</span>
+    <span><span class="led" style="background:#8e44ad"></span> ☀️ Skoleferie</span>
+  `;
+}
+
+function getHolidayKey(k, year) {
+  return holidays.hasOwnProperty(k);
 }
 
 function switchYear(year) {
   if (year < 2025 || year > 2035) return;
+  buildFilterBar(year);
   render(year);
 }
 
+buildFilterBar(2026);
 render(2026);
 </script>
 </body>
