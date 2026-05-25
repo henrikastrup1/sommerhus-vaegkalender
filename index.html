@@ -106,6 +106,26 @@
     display: flex;
     align-items: center;
     gap: 6px;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 20px;
+    transition: all 0.15s;
+    border: 2px solid transparent;
+    user-select: none;
+  }
+  .cal-header .owners span:hover {
+    background: rgba(0,0,0,0.04);
+  }
+  .cal-header .owners span.active {
+    border-color: currentColor;
+    background: rgba(0,0,0,0.03);
+  }
+  .cal-header .owners span.inactive {
+    opacity: 0.35;
+    text-decoration: line-through;
+  }
+  .cal-header .owners span.inactive:hover {
+    opacity: 0.6;
   }
 
   .cal-header .dot {
@@ -384,9 +404,9 @@
     <div class="year-num" id="yearDisplay">2026</div>
     <div class="title">Sommerhus — Birgit · Henrik · Hanne</div>
     <div class="owners">
-      <span><span class="dot dot-birgit"></span> Birgit</span>
-      <span><span class="dot dot-henrik"></span> Henrik</span>
-      <span><span class="dot dot-hanne"></span> Hanne</span>
+      <span onclick="toggleOwner('Birgit')" data-owner="Birgit" class="active"><span class="dot dot-birgit"></span> Birgit</span>
+      <span onclick="toggleOwner('Henrik')" data-owner="Henrik" class="active"><span class="dot dot-henrik"></span> Henrik</span>
+      <span onclick="toggleOwner('Hanne')" data-owner="Hanne" class="active"><span class="dot dot-hanne"></span> Hanne</span>
     </div>
   </div>
 
@@ -425,6 +445,24 @@ const refStart = new Date(2025, 11, 20); // Birgit starter d. 20. dec 2025
 const msDay = 86400000;
 
 let currentYear = 2026;
+let visibleOwners = new Set(["Birgit", "Henrik", "Hanne"]);
+
+function toggleOwner(name) {
+  if (visibleOwners.has(name)) {
+    // Don't allow de-selecting if it's the last one
+    if (visibleOwners.size === 1) return;
+    visibleOwners.delete(name);
+  } else {
+    visibleOwners.add(name);
+  }
+  // Update UI classes
+  document.querySelectorAll('.owners span[data-owner]').forEach(el => {
+    const o = el.dataset.owner;
+    el.classList.toggle('active', visibleOwners.has(o));
+    el.classList.toggle('inactive', !visibleOwners.has(o));
+  });
+  render(currentYear);
+}
 
 function addDays(date, n) {
   const d = new Date(date); d.setDate(d.getDate() + n); return d;
@@ -540,6 +578,9 @@ function render(year) {
 
       if (owner) {
         day.classList.add('has-booking', owner.toLowerCase());
+        if (!visibleOwners.has(owner)) {
+          day.style.opacity = '0.2';
+        }
       }
 
       if (isWeekend) day.classList.add('weekend');
@@ -549,9 +590,11 @@ function render(year) {
       }
 
       day.innerHTML = `<span class="day-num">${d}</span>`;
-      if (owner) {
+      if (owner && visibleOwners.has(owner)) {
         day.innerHTML += `<span class="indicator ${owner.toLowerCase()}"></span>`;
         day.title = `${d}. ${monthNames[m]} — ${owner}`;
+      } else if (owner) {
+        day.title = `${d}. ${monthNames[m]} — ${owner} (skjult)`;
       }
 
       daysDiv.appendChild(day);
@@ -561,13 +604,26 @@ function render(year) {
     grid.appendChild(monthDiv);
   }
 
-  // Stats
+  // Stats — only count visible bookings
+  const visibleBookings = bookings.filter(b => visibleOwners.has(b.who));
+  const visibleOwnerDays = { "Birgit": 0, "Henrik": 0, "Hanne": 0 };
+  let visibleTotalDays = 0;
+  visibleBookings.forEach(b => {
+    for (let d = new Date(b.start); d <= b.end; d.setDate(d.getDate() + 1)) {
+      if (d.getFullYear() === year) {
+        visibleTotalDays++;
+        visibleOwnerDays[b.who]++;
+      }
+    }
+  });
+  const v = visibleOwnerDays;
+  const totalFiltered = visibleOwners.size < 3 ? ` (filtreret)` : '';
   document.getElementById('statsStrip').innerHTML = `
-    <span>📊 <strong>${bookings.length}</strong> bookinger</span>
-    <span>📅 <strong>${totalDays}</strong> dage booket</span>
-    <span><span class="s-dot" style="background:#d6336c"></span> <strong>${ownerDays['Birgit']}</strong> dage</span>
-    <span><span class="s-dot" style="background:#1a4d2e"></span> <strong>${ownerDays['Henrik']}</strong> dage</span>
-    <span><span class="s-dot" style="background:#1565c0"></span> <strong>${ownerDays['Hanne']}</strong> dage</span>
+    <span>📊 <strong>${visibleBookings.length}</strong> bookinger${totalFiltered}</span>
+    <span>📅 <strong>${visibleTotalDays}</strong> dage${totalFiltered}</span>
+    <span><span class="s-dot" style="background:#d6336c"></span> <strong>${v['Birgit']}</strong>${visibleOwners.has('Birgit') ? '' : ' ✗'}</span>
+    <span><span class="s-dot" style="background:#1a4d2e"></span> <strong>${v['Henrik']}</strong>${visibleOwners.has('Henrik') ? '' : ' ✗'}</span>
+    <span><span class="s-dot" style="background:#1565c0"></span> <strong>${v['Hanne']}</strong>${visibleOwners.has('Hanne') ? '' : ' ✗'}</span>
   `;
 }
 
